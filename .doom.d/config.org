@@ -1,0 +1,183 @@
+* Basic config
+#+begin_src emacs-lisp
+
+(setq doom-font (font-spec :family "Hack" :size 24)
+      doom-variable-pitch-font (font-spec :family "Hack" :size 23))
+
+#+end_src
+
+* General
+** mu4e
+#+begin_src emacs-lisp
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(setq mu4e-change-filename-when-moving t)
+(setq mu4e-update-interval (* 10 60))
+(setq mu4e-get-mail-command "mbsync -a")
+(setq mu4e-maildir "~/Mail")
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq mu4e-compose-context-policy 'ask-if-none)
+
+(after! mu4e (setq mu4e-contexts
+                   (list
+                    ;; Personal gmail account
+                    (make-mu4e-context
+                     :name "Main-Gmail"
+                     :match-func
+                     (lambda (msg)
+                       (when msg
+                         (string-prefix-p "/kukoljmilena8" (mu4e-message-field msg :maildir))))
+                     :vars '((user-mail-address . "kukoljmilena8@gmail.com")
+                             (user-full-name    . "Milena Kukolj")
+                             (smtpmail-smtp-server . "smtp.gmail.com")
+                             (smtpmail-smtp-service . 465)
+                             (smtpmail-stream-type . ssl)
+                             (smtpmail-smtp-user . "kukoljmilena8@gmail.com")
+                             (mu4e-drafts-folder  . "/kukoljmilena8/[Gmail]/Drafts")
+                             (mu4e-sent-folder  . "/kukoljmilena8/[Gmail]/Sent Mail")
+                             (mu4e-refile-folder  . "/kukoljmilena8/[Gmail]/All Mail")
+                             (mu4e-trash-folder  . "/kukoljmilena8/[Gmail]/Trash")
+                             (mu4e-maildir-shortcuts .
+                                                     (("/kukoljmilena8/Inbox"             . ?i)
+                                                      ("/kukoljmilena8/[Gmail]/Sent Mail" . ?s)
+                                                      ("/kukoljmilena8/[Gmail]/Trash"     . ?t)
+                                                      ("/kukoljmilena8/[Gmail]/Drafts"    . ?d)
+                                                      ("/kukoljmilena8/[Gmail]/All Mail"  . ?a))))))))
+
+(after! mu4e (setq shr-use-colors nil))
+
+
+;;(define-key mu4e-headers-mode-map (kbd "a") #'mu4e-views-mu4e-select-view-msg-method)
+(use-package mu4e-views
+  :after mu4e
+  :defer nil
+  :bind (:map mu4e-headers-mode-map
+	    ("M-a" . mu4e-views-mu4e-select-view-msg-method) ;; select viewing method
+	    ("M-j" . mu4e-views-cursor-msg-view-window-down) ;; from headers window scroll the email view
+	    ("M-k" . mu4e-views-cursor-msg-view-window-up) ;; from headers window scroll the email view
+        ("f" . mu4e-views-toggle-auto-view-selected-message) ;; toggle opening messages automatically when moving in the headers view
+	    )
+  :config
+  (setq mu4e-views-completion-method 'ivy) ;; use ivy for completion
+  (setq mu4e-views-default-view-method "text") ;; make xwidgets default
+  (mu4e-views-mu4e-use-view-msg-method "text") ;; select the default
+  (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
+  (setq mu4e-views-auto-view-selected-message t)) ;; automatically open messages when moving in the headers view
+#+end_src
+
+** todoist
+#+begin_src emacs-lisp
+ (setq todoist-token "424653e01cc23bfd6dd6c06104fe42a3dea789b6")
+#+end_src
+
+* Org
+** org and org agenda directories
+#+begin_src emacs-lisp
+(setq org-directory "~/Dropbox/org")
+(setq org-agenda-files '("~/Dropbox/org"))
+#+end_src
+** org-roam
+#+begin_src emacs-lisp
+
+(use-package org-roam
+      :ensure t
+      :hook
+      (after-init . org-roam-mode)
+      :custom
+      (org-roam-directory "~/Documents/org-roam")
+      :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n g" . org-roam-graph))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert))
+              (("C-c n I" . org-roam-insert-immediate))))
+
+(use-package org-roam-server
+  :config
+  (setq org-roam-server-host "127.0.0.1"
+        org-roam-server-port 8888
+        org-roam-server-authenticate nil
+        org-roam-server-export-inline-images t
+        org-roam-server-serve-files nil
+        org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
+        org-roam-server-network-poll t
+        org-roam-server-network-arrows nil
+        org-roam-server-network-label-truncate t
+        org-roam-server-network-label-truncate-length 60
+        org-roam-server-network-label-wrap-length 20))
+
+#+end_src
+** org-habit
+#+begin_src emacs-lisp
+(add-to-list 'org-modules 'org-habit t)
+#+end_src
+
+** elfeed-org
+#+begin_src emacs-lisp
+;; Load elfeed-org
+;;(require 'elfeed-org)
+;; Initialize elfeed-org
+;; This hooks up elfeed-org to read the configuration when elfeed
+;; is started with =M-x elfeed=
+;;(elfeed-org)
+;; Optionally specify a number of files containing elfeed
+;; configuration. If not set then the location below is used.
+;; Note: The customize interface is also supported.
+#+end_src
+
+* Doom Theme
+#+begin_src emacs-lisp
+(load-theme 'doom-gruvbox t)
+#+end_src
+
+* Modes
+** Javascript (react)
+#+begin_src emacs-lisp
+;; (require 'flycheck)
+
+;; (defun web-mode-init-prettier-hook ()
+;;   (
+
+;; (add-hook 'web-mode-hook  'web-mode-init-prettier-hook)
+
+;; (add-hook 'web-mode-hook  'emmet-mode)
+
+;; ;; Enable eslint checker for web-mode
+;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+;; ;; Enable flycheck globally
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
+
+;; (setq-default flycheck-disabled-checkers
+;;               (append flycheck-disabled-checkers
+;;                       '(javascript-jshint json-jsonlist)))
+
+;; (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode)) ;; auto-enable
+
+;; (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+
+;; (defun web-mode-init-hook ()
+;;   "Hooks for Web mode.  Adjust indent."
+;;   (setq web-mode-markup-indent-offset 4))
+
+;; (add-hook 'web-mode-hook
+;;          'web-mode-init-hook)
+#+end_src
+
+** Java mode
+#+begin_src emacs-lisp
+(defadvice! +java-fix-meghanada-download-url-a (args)
+  :filter-args #'meghanada--download-from-url
+  (let ((url (pop args)))
+    (cons (if (equal (format
+                      "https://dl.bintray.com/mopemope/meghanada/meghanada-setup-%s.jar"
+                      meghanada-setup-version)
+                     url)
+              (format
+               "https://github.com/mopemope/meghanada-server/releases/download/v%s/meghanada-setup-%s.jar"
+               meghanada-version
+               meghanada-setup-version)
+            url)
+          args)))
+
+#+end_src
