@@ -1,0 +1,11 @@
+!swap alt and ctrl
+remove mod1 = Alt_L
+remove control = Control_L
+add mod1 = Control_L
+add control = Alt_L
+
+!swap caps and esc
+clear lock
+keysym Escape = Caps_Lock
+keysym Caps_Lock = Escape
+add lock = Caps_Lock

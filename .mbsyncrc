@@ -1,0 +1,24 @@
+Create Both
+Expunge Both
+SyncState *
+
+# IMAPAccount main
+IMAPAccount main
+Host imap.gmail.com
+User kukoljmilena8@gmail.com
+PassCmd "pass gmail"
+SSLType IMAPS
+AuthMechs LOGIN
+
+IMAPStore main-remote
+Account main
+
+MaildirStore main-local
+Path ~/Mail/kukoljmilena8/
+Inbox ~/Mail/kukoljmilena8/Inbox
+SubFolders Verbatim
+
+Channel main
+Far :main-remote:
+Near :main-local:
+Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail" "[Gmail]/Trash"
