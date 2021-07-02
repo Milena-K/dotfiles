@@ -5,3 +5,4 @@
 (package! add-node-modules-path)
 (package! todoist)
 (package! mu4e-views)
+(package! mu4e-alert)

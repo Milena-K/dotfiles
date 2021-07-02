@@ -116,7 +116,8 @@ alias zshconf='vim ~/.zshrc'
 alias i3conf='vim ~/.config/i3/config'
 
 #General Aliases
-alias cat='ccat'
+alias jnb='jupyter notebook ~/Dev/Notebooks'
+alias cat='bat'
 alias down='cd ~/Downloads'
 alias dev='cd ~/Dev'
 alias docs='cd ~/Documents'

@@ -1,21 +1,46 @@
 * Basic config
+** General settings
+#+begin_src emacs-lisp
+(setq doom-modeline-height 10)
+#+end_src
+
+** Setting font
 #+begin_src emacs-lisp
 
 (setq doom-font (font-spec :family "Hack" :size 24)
       doom-variable-pitch-font (font-spec :family "Hack" :size 23))
 
 #+end_src
+** Daemon settings
+#+begin_src emacs-lisp
+(defun greedily-do-daemon-setup ()
+  (interactive)
+  (require 'org)
+  (when (require 'mu4e nil t)
+    (setq mu4e-confirm-quit t)
+    (setq +mu4e-lock-greedy t)
+    (setq +mu4e-lock-relaxed t)
+    (+mu4e-lock-add-watcher)
+    (when (+mu4e-lock-available t)
+      (mu4e~start))))
 
-* General
+(when (daemonp)
+  (add-hook 'emacs-startup-hook #'greedily-do-daemon-setup))
+#+end_src
+
+#+RESULTS:
+| greedily-do-daemon-setup | doom-load-packages-incrementally-h |
+
+* Packages
 ** mu4e
 #+begin_src emacs-lisp
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 (setq mu4e-change-filename-when-moving t)
-(setq mu4e-update-interval (* 10 60))
 (setq mu4e-get-mail-command "mbsync -a")
 (setq mu4e-maildir "~/Mail")
 (setq message-send-mail-function 'smtpmail-send-it)
 (setq mu4e-compose-context-policy 'ask-if-none)
+(after! mu4e (setq mu4e-update-interval (* 5 60)))
 
 (after! mu4e (setq mu4e-contexts
                    (list
@@ -45,6 +70,11 @@
 
 (after! mu4e (setq shr-use-colors nil))
 
+(after! mu4e
+(mu4e-alert-set-default-style 'libnotify)
+(add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+(setq mu4e-alert-email-notification-types '(count)))
 
 ;;(define-key mu4e-headers-mode-map (kbd "a") #'mu4e-views-mu4e-select-view-msg-method)
 (use-package mu4e-views
@@ -62,15 +92,18 @@
   (mu4e-views-mu4e-use-view-msg-method "text") ;; select the default
   (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
   (setq mu4e-views-auto-view-selected-message t)) ;; automatically open messages when moving in the headers view
+
 #+end_src
+
+#+RESULTS:
+| count |
 
 ** todoist
 #+begin_src emacs-lisp
  (setq todoist-token "424653e01cc23bfd6dd6c06104fe42a3dea789b6")
 #+end_src
 
-* Org
-** org and org agenda directories
+* Org ** org and org agenda directories
 #+begin_src emacs-lisp
 (setq org-directory "~/Dropbox/org")
 (setq org-agenda-files '("~/Dropbox/org"))
